@@ -5,3 +5,4 @@ graphify-out
 .env
 *.local
 chat-paused.png
+docs

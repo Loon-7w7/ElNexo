@@ -1,7 +1,18 @@
 {
   "name": "el-nexo",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Todos tus chats en una pestaña: junta los chats de Twitch, Kick, YouTube o cualquier sitio en un grid responsivo.",
+  "author": "Producciones Alpeka/LonyArts",
+  "license": "UNLICENSED",
+  "homepage": "https://github.com/Loon-7w7/ElNexo#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Loon-7w7/ElNexo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Loon-7w7/ElNexo/issues"
+  },
   "type": "module",
   "engines": {
     "node": "22.x"
