@@ -1,0 +1,7 @@
+# Lo que no se sube a Vercel al desplegar con `vercel` desde la terminal.
+# (node_modules y .git se ignoran siempre; Vercel instala y compila en su servidor.)
+dist
+graphify-out
+.env
+*.local
+chat-paused.png
