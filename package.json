@@ -1,7 +1,7 @@
 {
   "name": "el-nexo",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.2.1",
   "description": "Todos tus chats en una pestaña: junta los chats de Twitch, Kick, YouTube o cualquier sitio en un grid responsivo.",
   "author": "Producciones Alpeka/LonyArts",
   "license": "UNLICENSED",
