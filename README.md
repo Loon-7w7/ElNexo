@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/trenza-icon.svg" alt="" width="96" height="96" />
+<img src="public/el-nexo-tigre.svg" alt="" width="96" height="96" />
 
 # El Nexo
 

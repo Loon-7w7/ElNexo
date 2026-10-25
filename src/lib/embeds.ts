@@ -1,18 +1,11 @@
-import { DEFAULT_COLOR, type PopoutSource } from './config';
+import type { PopoutSource } from './config';
+import { KNOWN_PLATFORMS, parsePlatformUrl, type KnownPlatform } from './platforms';
 
 /**
  * Algunas plataformas bloquean su popout dentro de un iframe pero tienen una versión
- * incrustable. Aquí se traduce el link que pega el usuario a esa versión.
- * Cualquier otro sitio se carga tal cual.
+ * incrustable. Aquí se traduce el link guardado a esa versión.
+ * Los chats personalizados se cargan tal cual.
  */
-
-export type KnownPlatform = 'twitch' | 'youtube' | 'kick';
-
-export const KNOWN_PLATFORMS: Record<KnownPlatform, { label: string; tag: string; color: string }> = {
-  twitch: { label: 'Twitch', tag: 'TW', color: '#9146ff' },
-  youtube: { label: 'YouTube', tag: 'YT', color: '#ff4d4d' },
-  kick: { label: 'Kick', tag: 'KK', color: '#53fc18' },
-};
 
 export interface ResolvedPopout {
   /** URL que se carga en el iframe. */
@@ -23,15 +16,6 @@ export interface ResolvedPopout {
   host?: string;
 }
 
-const TWITCH_RESERVED = new Set(['directory', 'videos', 'settings', 'search', 'downloads', 'p']);
-
-function youTubeId(url: URL): string | undefined {
-  const fromQuery = url.searchParams.get('v');
-  if (fromQuery) return fromQuery;
-  const match = url.pathname.match(/^\/(?:live|embed|shorts)?\/?([\w-]{11})$/);
-  return match?.[1];
-}
-
 export function resolvePopout(raw: string, theme: 'dark' | 'light'): ResolvedPopout {
   let url: URL;
   try {
@@ -40,45 +24,38 @@ export function resolvePopout(raw: string, theme: 'dark' | 'light'): ResolvedPop
     return { src: raw };
   }
   const host = url.hostname.replace(/^(www|m)\./, '');
-  const parts = url.pathname.split('/').filter(Boolean);
+  const known = parsePlatformUrl(url);
+  if (!known) return { src: url.toString(), host };
+
+  const { platform, channel } = known;
+  const meta = KNOWN_PLATFORMS[platform];
+  if (!meta.pattern.test(channel)) return { src: url.toString(), platform, host };
   // Twitch y YouTube exigen saber en qué dominio se incrusta el chat.
   const embedDomain = window.location.hostname;
 
-  if (host === 'twitch.tv') {
-    // twitch.tv/canal · twitch.tv/popout/canal/chat · twitch.tv/embed/canal/chat
-    const channel = (parts[0] === 'popout' || parts[0] === 'embed' ? parts[1] : parts[0])?.toLowerCase();
-    if (channel && !TWITCH_RESERVED.has(channel)) {
-      const params = new URLSearchParams({ parent: embedDomain });
-      if (theme === 'dark') params.set('darkpopout', '');
-      return { platform: 'twitch', channel, host, src: `https://www.twitch.tv/embed/${channel}/chat?${params}` };
-    }
+  if (platform === 'twitch') {
+    const params = new URLSearchParams({ parent: embedDomain });
+    if (theme === 'dark') params.set('darkpopout', '');
+    const name = channel.toLowerCase();
+    return { platform, channel: name, host, src: `https://www.twitch.tv/embed/${name}/chat?${params}` };
   }
-
-  if (host === 'youtube.com' || host === 'youtu.be') {
-    const id = host === 'youtu.be' ? parts[0] : youTubeId(url);
-    if (id) {
-      const params = new URLSearchParams({ v: id, embed_domain: embedDomain });
-      if (theme === 'dark') params.set('dark_theme', '1');
-      return { platform: 'youtube', channel: id, host, src: `https://www.youtube.com/live_chat?${params}` };
-    }
+  if (platform === 'youtube') {
+    const params = new URLSearchParams({ v: channel, embed_domain: embedDomain });
+    if (theme === 'dark') params.set('dark_theme', '1');
+    return { platform, channel, host, src: `https://www.youtube.com/live_chat?${params}` };
   }
-
-  if (host === 'kick.com') {
-    // kick.com/canal · kick.com/popout/canal/chat
-    const channel = (parts[0] === 'popout' ? parts[1] : parts[0])?.toLowerCase();
-    if (channel) return { platform: 'kick', channel, host, src: `https://kick.com/popout/${channel}/chat` };
-  }
-
-  return { src: url.toString(), host };
+  // Kick y Starvios: minúsculas también para links guardados o compartidos con mayúsculas.
+  const name = channel.toLowerCase();
+  return { platform, channel: name, host, src: meta.popoutUrl(name) };
 }
 
-/** Nombre y color que se proponen al pegar un link nuevo. */
+/** Nombre que se propone al agregar un chat nuevo. */
 export function suggestSource(url: string): PopoutSource {
   const { platform, channel, host } = resolvePopout(url, 'dark');
   if (platform) {
     const meta = KNOWN_PLATFORMS[platform];
-    const name = platform === 'youtube' ? 'YouTube' : (channel ?? meta.label);
-    return { name: name.slice(0, 24), color: meta.color, url };
+    const name = platform === 'youtube' || !channel ? meta.label : channel;
+    return { name: name.slice(0, 24), url, enabled: true };
   }
-  return { name: (host ?? 'Chat').slice(0, 24), color: DEFAULT_COLOR, url };
+  return { name: (host ?? 'Chat').slice(0, 24), url, enabled: true };
 }

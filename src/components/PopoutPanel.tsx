@@ -1,7 +1,9 @@
 import { ExternalLink, LoaderCircle, Maximize2, Minimize2, RotateCw, X } from 'lucide-preact';
 import { useMemo, useState } from 'preact/hooks';
-import { isSafeUrl, type PopoutSource } from '../lib/config';
+import { isValidSourceUrl, type PopoutSource } from '../lib/config';
 import { resolvePopout } from '../lib/embeds';
+import { sourceColor } from '../lib/platforms';
+import { PlatformIcon } from './ui';
 
 /**
  * Permisos de cada iframe: todo lo que un chat necesita (scripts, sus cookies, formularios,
@@ -42,7 +44,7 @@ interface Props {
 export function PopoutPanel({ source, theme, maximized, index, onToggleMax, onRemove }: Props) {
   // Cambiar la key del iframe lo vuelve a cargar desde cero.
   const [reload, setReload] = useState(0);
-  const { src } = useMemo(() => resolvePopout(source.url, theme), [source.url, theme]);
+  const { src, platform } = useMemo(() => resolvePopout(source.url, theme), [source.url, theme]);
   // Se guarda qué versión terminó de cargar: si cambia el src o se recarga, vuelve el indicador.
   const frameKey = `${reload}:${src}`;
   const [loadedKey, setLoadedKey] = useState('');
@@ -50,7 +52,7 @@ export function PopoutPanel({ source, theme, maximized, index, onToggleMax, onRe
   const host = hostOf(source.url);
 
   // Defensa extra: el grid ya filtra las URLs, pero este componente no confía en quien lo usa.
-  if (!isSafeUrl(source.url)) return null;
+  if (!isValidSourceUrl(source.url)) return null;
 
   return (
     <section
@@ -60,7 +62,8 @@ export function PopoutPanel({ source, theme, maximized, index, onToggleMax, onRe
       style={{ '--i': String(index) }}
     >
       <header className="panel-head">
-        <span className={`dot square${loading ? ' pulse' : ''}`} style={{ background: source.color }} />
+        <span className={`dot square${loading ? ' pulse' : ''}`} style={{ background: sourceColor(source.url) }} />
+        {platform && <PlatformIcon platform={platform} size={14} />}
         <span className="panel-name" title={source.url}>
           {source.name}
           {host && host !== source.name && <span className="panel-host">{host}</span>}

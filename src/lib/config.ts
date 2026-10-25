@@ -1,15 +1,18 @@
 import { APP_SLUG } from './brand';
+import { customHostError, KNOWN_PLATFORMS, parsePlatformUrl, sourceColor } from './platforms';
 
 /**
  * La configuración vive en localStorage (sin login ni base de datos) y la barra de direcciones
  * queda limpia. Solo el enlace para compartir lleva los popouts:
  * /grid?p=Mi%20chat|9146ff|https://www.twitch.tv/popout/canal/chat&theme=light
+ * (los chats desactivados van con `x=` en lugar de `p=`).
  */
 
 export interface PopoutSource {
   name: string;
-  color: string;
   url: string;
+  /** Un chat desactivado sigue en la lista (y en el enlace para compartir) pero no se carga en el grid. */
+  enabled: boolean;
 }
 
 export type Theme = 'dark' | 'light' | 'system';
@@ -19,8 +22,6 @@ export interface Config {
   theme: Theme;
 }
 
-export const DEFAULT_COLOR = '#a78bfa';
-
 export const DEFAULT_CONFIG: Config = {
   sources: [],
   theme: 'dark',
@@ -28,6 +29,8 @@ export const DEFAULT_CONFIG: Config = {
 
 /** Más iframes que esto congelan la pestaña; también frena enlaces compartidos abusivos. */
 export const MAX_SOURCES = 12;
+/** Chats que se cargan a la vez en el grid; el resto se puede tener en la lista desactivado. */
+export const MAX_ACTIVE = 4;
 export const MAX_NAME_LENGTH = 24;
 const MAX_URL_LENGTH = 2000;
 
@@ -60,6 +63,30 @@ export function isSafeUrl(url: string): boolean {
 }
 
 /**
+ * Un chat es válido si es de una plataforma conocida con un usuario o ID correcto,
+ * o si es un link personalizado que pasa las reglas de seguridad.
+ */
+export function isValidSourceUrl(url: string): boolean {
+  if (!isSafeUrl(url)) return false;
+  const parsed = new URL(url);
+  const known = parsePlatformUrl(parsed);
+  if (known) return KNOWN_PLATFORMS[known.platform].pattern.test(known.channel);
+  return PRIVATE_HOST.test(parsed.hostname) || customHostError(parsed) === null;
+}
+
+/** Por qué no se acepta un link en la opción "Personalizada", o null si se acepta. */
+export function customUrlError(url: string): string | null {
+  if (!isSafeUrl(url)) return 'Ese link no sirve: debe empezar con https:// y ser de un sitio público.';
+  const parsed = new URL(url);
+  const known = parsePlatformUrl(parsed);
+  if (known) {
+    const meta = KNOWN_PLATFORMS[known.platform];
+    return `Para ${meta.label} elige "${meta.label}" en el selector y escribe solo el ${meta.field.toLowerCase()}.`;
+  }
+  return PRIVATE_HOST.test(parsed.hostname) ? null : customHostError(parsed);
+}
+
+/**
  * Quita caracteres de control e invisibles (incluye los bidi, que invierten el texto
  * para suplantar nombres) y el separador "|". No recorta espacios: se usa mientras se escribe.
  */
@@ -67,23 +94,31 @@ export function sanitizeName(name: string): string {
   return name.replace(/[\p{C}|]/gu, '').slice(0, MAX_NAME_LENGTH);
 }
 
-function parseSource(raw: string): PopoutSource {
-  const [name, color, ...rest] = raw.split('|');
-  const hex = (color ?? '').replace('#', '');
+function parseSource(raw: string, enabled: boolean): PopoutSource {
+  // El segundo campo es el color: se mantiene en el formato, pero ahora lo define la plataforma.
+  const [name, , ...rest] = raw.split('|');
   return {
     name: sanitizeName(name).trim() || 'Chat',
-    color: /^[0-9a-f]{6}$/i.test(hex) ? `#${hex}` : DEFAULT_COLOR,
     url: rest.join('|').trim(),
+    enabled,
   };
 }
 
+/** `p` es un chat activo y `x` uno desactivado; `c` es el parámetro de los enlaces de la versión anterior. */
+const ENABLED_KEYS = new Set(['p', 'c']);
+const DISABLED_KEY = 'x';
+
 export function parseConfig(params: URLSearchParams): Config {
-  // `c` es el parámetro que usaban los enlaces de la versión anterior.
   const sources = [...params]
-    .filter(([key]) => key === 'p' || key === 'c')
-    .map(([, value]) => parseSource(value))
-    .filter((s) => isSafeUrl(s.url))
+    .filter(([key]) => ENABLED_KEYS.has(key) || key === DISABLED_KEY)
+    .map(([key, value]) => parseSource(value, key !== DISABLED_KEY))
+    .filter((s) => isValidSourceUrl(s.url))
     .slice(0, MAX_SOURCES);
+  // Un enlace o una configuración guardada con más activos de la cuenta: se apagan los últimos.
+  let active = 0;
+  for (const s of sources) {
+    if (s.enabled && ++active > MAX_ACTIVE) s.enabled = false;
+  }
   const theme = params.get('theme');
   return {
     sources,
@@ -93,8 +128,8 @@ export function parseConfig(params: URLSearchParams): Config {
 
 export function serializeConfig(config: Config): string {
   const params = new URLSearchParams();
-  for (const s of config.sources.filter((s) => isSafeUrl(s.url)).slice(0, MAX_SOURCES)) {
-    params.append('p', `${sanitizeName(s.name).trim()}|${s.color.replace('#', '')}|${s.url}`);
+  for (const s of config.sources.filter((s) => isValidSourceUrl(s.url)).slice(0, MAX_SOURCES)) {
+    params.append(s.enabled ? 'p' : DISABLED_KEY, `${sanitizeName(s.name).trim()}|${sourceColor(s.url).replace('#', '')}|${s.url}`);
   }
   if (config.theme !== 'dark') params.set('theme', config.theme);
   return params.toString();

@@ -21,7 +21,9 @@ function withKeys(sources: PopoutSource[]) {
 export function GridView() {
   const [config, setConfig] = useState(loadLastConfig);
   const theme = useResolvedTheme(config.theme);
-  const panels = useMemo(() => withKeys(config.sources), [config.sources]);
+  const allPanels = useMemo(() => withKeys(config.sources), [config.sources]);
+  // Los desactivados no se cargan, pero se conservan al quitar otro chat.
+  const panels = useMemo(() => allPanels.filter((p) => p.source.enabled), [allPanels]);
   const [maximized, setMaximized] = useState<string | null>(null);
   const activeMax = panels.some((p) => p.key === maximized) ? maximized : null;
 
@@ -40,7 +42,7 @@ export function GridView() {
   }, [activeMax]);
 
   const remove = (key: string) => {
-    const next = { ...config, sources: panels.filter((p) => p.key !== key).map((p) => p.source) };
+    const next = { ...config, sources: allPanels.filter((p) => p.key !== key).map((p) => p.source) };
     saveLastConfig(next);
     setConfig(next);
   };
@@ -52,8 +54,12 @@ export function GridView() {
           <span className="empty-icon">
             <LayoutGrid size={28} />
           </span>
-          <h1>No hay chats configurados</h1>
-          <p>Agrega al menos un link de chat para empezar.</p>
+          <h1>{allPanels.length === 0 ? 'No hay chats configurados' : 'No hay chats activos'}</h1>
+          <p>
+            {allPanels.length === 0
+              ? 'Agrega al menos un chat para empezar.'
+              : 'Activa al menos un chat en el configurador para verlo aquí.'}
+          </p>
           <a className="btn primary" href="/" onClick={followLink}>
             <SlidersHorizontal size={16} /> Ir al configurador
           </a>
@@ -85,7 +91,7 @@ export function GridView() {
 
       <LoginBanner />
 
-      <main className={`popout-grid${activeMax ? ' has-max' : ''}`}>
+      <main className={`popout-grid${activeMax ? ' has-max' : ''}`} data-count={panels.length}>
         {panels.map(({ key, source }, i) => (
           <PopoutPanel
             key={key}

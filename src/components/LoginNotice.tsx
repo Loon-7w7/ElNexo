@@ -1,8 +1,9 @@
 import { ChevronDown, ExternalLink, KeyRound, LockKeyhole, TriangleAlert, X } from 'lucide-preact';
 import { useState } from 'preact/hooks';
 import { APP_NAME, APP_SLUG } from '../lib/brand';
+import { Modal } from './ui';
 
-/** Aviso sobre inicios de sesión dentro de los chats: franja en el grid y tarjeta en el configurador. */
+/** Aviso sobre inicios de sesión dentro de los chats: franja en el grid y modal en el configurador. */
 
 const DISMISS_KEY = `${APP_SLUG}:login-notice-dismissed`;
 
@@ -80,16 +81,20 @@ export function LoginBanner() {
   );
 }
 
-/** Explicación completa, fija en el configurador. */
-export function LoginInfoCard({ style }: { style?: Record<string, string> }) {
+/** Explicación completa en un modal del configurador. */
+export function PrivacyNotice({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
-    <section className="card rise" style={style}>
-      <div className="card-head">
-        <div className="card-title">
-          <LockKeyhole size={16} class="card-icon" />
-          <h2>Inicio de sesión y privacidad</h2>
-        </div>
-      </div>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Inicio de sesión y privacidad"
+      icon={<LockKeyhole size={16} class="card-icon" />}
+      footer={
+        <button type="button" className="btn accent" onClick={onClose}>
+          Entendido
+        </button>
+      }
+    >
       <div className="notice-card">
         <p>
           Algunos chats piden iniciar sesión aunque ya la tengas abierta en otra pestaña. No es un error de {APP_NAME}: los
@@ -100,13 +105,13 @@ export function LoginInfoCard({ style }: { style?: Record<string, string> }) {
         <ul className="notice-list">
           <li>Cada chat se carga aislado: la app no puede ver tu usuario, tu contraseña, tus cookies ni lo que escribes.</li>
           <li>No hay servidor: no existe ningún lugar al que se pueda mandar tu información.</li>
-          <li>Lo único que se guarda, y solo en tu navegador, es la lista de chats: nombre, color y link.</li>
+          <li>Lo único que se guarda, y solo en tu navegador, es la lista de chats: nombre, link y si está activo.</li>
         </ul>
 
         <h3>Cómo solucionarlo</h3>
         <SolutionSteps />
         <DomainWarning />
       </div>
-    </section>
+    </Modal>
   );
 }

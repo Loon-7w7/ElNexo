@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>El Nexo</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c1426"/>
+      <stop offset="1" stop-color="#0d0a12"/>
+    </linearGradient>
+    <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff7a2e"/>
+      <stop offset="1" stop-color="#ef4a1f"/>
+    </linearGradient>
+    <radialGradient id="iris" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0" stop-color="#ffe066"/>
+      <stop offset="1" stop-color="#f59a0b"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+
+  <!-- Orejas -->
+  <g>
+    <circle cx="138" cy="150" r="66" fill="#16111c"/>
+    <circle cx="138" cy="150" r="54" fill="url(#fur)"/>
+    <circle cx="146" cy="160" r="30" fill="#fff4e8"/>
+    <circle cx="374" cy="150" r="66" fill="#16111c"/>
+    <circle cx="374" cy="150" r="54" fill="url(#fur)"/>
+    <circle cx="366" cy="160" r="30" fill="#fff4e8"/>
+  </g>
+
+  <!-- Cabeza -->
+  <path d="M256 128c92 0 168 54 168 150 0 50-20 86-52 112-32 26-72 40-116 40s-84-14-116-40c-32-26-52-62-52-112 0-96 76-150 168-150z" fill="url(#fur)"/>
+
+  <!-- Rayas de la frente -->
+  <path d="M256 132c-10 0-14 6-12 16l8 42c1 6 7 6 8 0l8-42c2-10-2-16-12-16z" fill="#16111c"/>
+  <path d="M208 140c-9 3-11 10-7 18l20 30c4 5 9 3 8-3l-6-36c-2-8-8-11-15-9z" fill="#16111c"/>
+  <path d="M304 140c9 3 11 10 7 18l-20 30c-4 5-9 3-8-3l6-36c2-8 8-11 15-9z" fill="#16111c"/>
+
+  <!-- Rayas laterales -->
+  <path d="M92 250c18 2 40 8 58 18 5 3 3 9-3 9-20 0-40-4-58-10z" fill="#16111c"/>
+  <path d="M94 300c16-1 36 1 52 7 5 2 4 8-2 9-18 2-34 1-50-3z" fill="#16111c"/>
+  <path d="M420 250c-18 2-40 8-58 18-5 3-3 9 3 9 20 0 40-4 58-10z" fill="#16111c"/>
+  <path d="M418 300c-16-1-36 1-52 7-5 2-4 8 2 9 18 2 34 1 50-3z" fill="#16111c"/>
+
+  <!-- Hocico y mejillas claras -->
+  <path d="M256 300c-30 0-58 8-80 22-30 20-30 60 6 76 22 10 48 14 74 14s52-4 74-14c36-16 36-56 6-76-22-14-50-22-80-22z" fill="#fff4e8"/>
+
+  <!-- Manchas blancas sobre los ojos -->
+  <ellipse cx="200" cy="222" rx="24" ry="13" fill="#fff4e8" transform="rotate(-12 200 222)"/>
+  <ellipse cx="312" cy="222" rx="24" ry="13" fill="#fff4e8" transform="rotate(12 312 222)"/>
+
+  <!-- Ojos -->
+  <g>
+    <path d="M150 262c18-24 58-30 82-8-10 26-44 40-72 30-8-3-14-12-10-22z" fill="#16111c"/>
+    <path d="M160 262c16-16 46-20 62-6-10 18-34 28-54 21-6-2-10-9-8-15z" fill="url(#iris)"/>
+    <ellipse cx="194" cy="265" rx="5" ry="15" fill="#16111c"/>
+    <circle cx="186" cy="257" r="4" fill="#ffffff"/>
+
+    <path d="M362 262c-18-24-58-30-82-8 10 26 44 40 72 30 8-3 14-12 10-22z" fill="#16111c"/>
+    <path d="M352 262c-16-16-46-20-62-6 10 18 34 28 54 21 6-2 10-9 8-15z" fill="url(#iris)"/>
+    <ellipse cx="318" cy="265" rx="5" ry="15" fill="#16111c"/>
+    <circle cx="310" cy="257" r="4" fill="#ffffff"/>
+  </g>
+
+  <!-- Marcas rojas en las mejillas -->
+  <g stroke="#a5101c" stroke-width="8" stroke-linecap="round">
+    <path d="M138 318l14 6"/><path d="M132 336l16 3"/><path d="M134 354l15 0"/>
+    <path d="M374 318l-14 6"/><path d="M380 336l-16 3"/><path d="M378 354l-15 0"/>
+  </g>
+
+  <!-- Nariz y boca :3 -->
+  <path d="M240 322h32c6 0 8 6 4 10l-14 12c-3 3-9 3-12 0l-14-12c-4-4-2-10 4-10z" fill="#2a1a22"/>
+  <path d="M256 344v10c0 10-8 16-17 16s-15-6-15-12M256 354c0 10 8 16 17 16s15-6 15-12" fill="none" stroke="#2a1a22" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

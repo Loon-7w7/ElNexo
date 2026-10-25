@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="relleno" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#ff9fd0"/>
+      <stop offset="1" stop-color="#ff6db4"/>
+    </linearGradient>
+  </defs>
+  <g transform="rotate(-12 50 52)">
+    <!-- Estrella con puntas redondeadas -->
+    <path d="M50 12 L60.6 37.4 L88 39.6 L67.1 57.6 L73.5 84.4 L50 70 L26.5 84.4 L32.9 57.6 L12 39.6 L39.4 37.4Z"
+          fill="url(#relleno)" stroke="url(#relleno)" stroke-width="9" stroke-linejoin="round"/>
+  </g>
+</svg>
