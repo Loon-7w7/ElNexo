@@ -337,6 +337,10 @@ code {
   align-items: center;
   gap: 28px;
 }
+.logo {
+  display: block;
+  flex: none;
+}
 .brand {
   display: flex;
   align-items: center;
@@ -1013,11 +1017,6 @@ h1 {
     background-position: -200% 0;
   }
 }
-@keyframes draw {
-  from {
-    stroke-dashoffset: 1;
-  }
-}
 
 /* Entrada escalonada: cada elemento define --i con su posición. */
 .rise {
@@ -1062,18 +1061,6 @@ h1 {
   animation: rise 0.35s var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * 40ms);
 }
-/* Las tres hebras del logo se dibujan al cargar. */
-.logo .strand {
-  stroke-dasharray: 1;
-  animation: draw 0.9s var(--ease-out) both;
-}
-.logo .strand:nth-child(2) {
-  animation-delay: 0.08s;
-}
-.logo .strand:nth-child(3) {
-  animation-delay: 0.16s;
-}
-
 /* Cambio de tema suave. */
 body,
 .topbar,

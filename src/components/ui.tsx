@@ -1,23 +1,9 @@
 import type { ComponentChildren } from 'preact';
 import { APP_CREDITS } from '../lib/brand';
 
-/** Ícono de la app (trenza): el mismo dibujo que public/trenza-icon.svg. */
+/** Ícono de la app (tigre): public/el-nexo-tigre.svg. */
 export function Logo({ size = 28 }: { size?: number }) {
-  return (
-    <svg className="logo" width={size} height={size} viewBox="0 0 512 512" aria-hidden="true">
-      <rect width="512" height="512" rx="112" fill="#14121c" />
-      <path
-        d="M136 120h240a52 52 0 0 1 52 52v144a52 52 0 0 1-52 52H248l-70 60v-60h-42a52 52 0 0 1-52-52V172a52 52 0 0 1 52-52z"
-        fill="#241f38"
-      />
-      <g fill="none" stroke-width="26" stroke-linecap="round">
-        <path className="strand" pathLength={1} d="M150 190C238 190 262 244 362 244" stroke="#9146FF" />
-        <path className="strand" pathLength={1} d="M150 298C238 298 262 244 362 244" stroke="#FF3B3B" />
-        <path className="strand" pathLength={1} d="M150 244H362" stroke="#53FC18" />
-      </g>
-      <circle cx="362" cy="244" r="20" fill="#f4f1ff" />
-    </svg>
-  );
+  return <img className="logo" src="/el-nexo-tigre.svg" width={size} height={size} alt="" />;
 }
 
 export function TagBadge({ tag, color, fg = '#0a0a0f', size = 34 }: { tag: string; color: string; fg?: string; size?: number }) {

@@ -3,6 +3,13 @@
 Todos los cambios importantes de El Nexo quedan anotados aquí.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y las versiones usan [SemVer](https://semver.org/lang/es/).
 
+## [1.1.0] — 2026-10-25
+
+### Cambiado
+
+- **Nuevo ícono**: el tigre de El Nexo reemplaza a la trenza en la pestaña del navegador, en la barra superior y en
+  el README.
+
 ## [1.0.0] — 2026-10-19
 
 Primera versión pública.
@@ -27,4 +34,5 @@ Primera versión pública.
 - Botón de donaciones a Ko-fi y créditos de Producciones Alpeka/LonyArts.
 - Lista para publicar en Vercel (plan gratuito): `vercel.json` con reescritura de rutas, caché y cabeceras.
 
+[1.1.0]: https://github.com/Loon-7w7/ElNexo/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Loon-7w7/ElNexo/releases/tag/v1.0.0
